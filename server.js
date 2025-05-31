@@ -7,9 +7,14 @@ const PORT = process.env.PORT || 8080;
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Route for the main game
+// Route for the main landing page
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Route for the 3D game
+app.get('/3d', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', '3d', 'index.html'));
 });
 
 // Start the server
