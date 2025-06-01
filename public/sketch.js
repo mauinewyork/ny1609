@@ -37,6 +37,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const actualNumSlides = slideImagePaths.length;
   let currentSlide = 0;
+  let preloadedImage = null; // To hold the preloaded image object
+
+  function preloadNextSlide(currentIndex) {
+    if (actualNumSlides === 0) return;
+    const nextSlideIndex = (currentIndex + 1) % actualNumSlides;
+    if (slideImagePaths[nextSlideIndex]) {
+      preloadedImage = new Image();
+      preloadedImage.src = slideImagePaths[nextSlideIndex];
+      // console.log('Preloading image:', slideImagePaths[nextSlideIndex]);
+    }
+  }
+
+  function displayImageAndPreloadNext(slideIndex) {
+    slideImageElement.src = slideImagePaths[slideIndex];
+    // Re-trigger CSS animation for fade-in
+    slideImageElement.classList.remove('cover-image');
+    void slideImageElement.offsetWidth; // Force reflow
+    slideImageElement.classList.add('cover-image');
+    preloadNextSlide(slideIndex); // Start preloading the next slide
+  }
 
   function showSlide(slideIndex, isInitialLoad = false) {
     if (!slideImageElement) {
@@ -50,33 +70,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (isInitialLoad) {
-      slideImageElement.src = slideImagePaths[slideIndex];
-      // The 'cover-image' class is already on the element from HTML.
-      // Re-applying the class ensures the animation triggers correctly with the new src.
-      slideImageElement.classList.remove('cover-image');
-      void slideImageElement.offsetWidth; // Force reflow to restart animation
-      slideImageElement.classList.add('cover-image');
+      displayImageAndPreloadNext(slideIndex);
     } else {
       // Fade out current image
       slideImageElement.style.transition = 'opacity 0.7s ease-in-out';
       slideImageElement.style.opacity = '0';
 
       setTimeout(() => {
-        slideImageElement.src = slideImagePaths[slideIndex];
         // Remove inline transition so CSS animation can take over for fade-in
         slideImageElement.style.transition = '';
-
-        // Re-trigger CSS animation for fade-in by toggling the class
-        slideImageElement.classList.remove('cover-image');
-        void slideImageElement.offsetWidth; // Force reflow
-        slideImageElement.classList.add('cover-image');
-        // The 'cover-image' class CSS handles opacity:0 start and animation to opacity:1
+        displayImageAndPreloadNext(slideIndex);
       }, 700); // Wait for fade-out (0.7s)
     }
   }
 
   if (actualNumSlides > 0) {
-    showSlide(currentSlide, true); // Load the first slide
+    showSlide(currentSlide, true); // Load the first slide and preload the next one
   } else {
     console.error("No slides to show. Check slideImagePaths array.");
     if (slideImageElement) {
