@@ -51,31 +51,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (isInitialLoad) {
       slideImageElement.src = slideImagePaths[slideIndex];
-      slideImageElement.classList.remove('cover-image'); // Ensure clean state
-      void slideImageElement.offsetWidth; // Force reflow
-      slideImageElement.classList.add('cover-image'); // Apply class for initial fade-in
+      // The 'cover-image' class is already on the element from HTML.
+      // Re-applying the class ensures the animation triggers correctly with the new src.
+      slideImageElement.classList.remove('cover-image');
+      void slideImageElement.offsetWidth; // Force reflow to restart animation
+      slideImageElement.classList.add('cover-image');
     } else {
       // Fade out current image
       slideImageElement.style.transition = 'opacity 0.5s ease-in-out';
       slideImageElement.style.opacity = '0';
 
-      const handleFadeOutComplete = () => {
-        // Clean up the event listener to prevent multiple firings
-        slideImageElement.removeEventListener('transitionend', handleFadeOutComplete);
-
+      setTimeout(() => {
         slideImageElement.src = slideImagePaths[slideIndex];
         // Remove inline transition so CSS animation can take over for fade-in
-        slideImageElement.style.transition = ''; // Clear inline transition
+        slideImageElement.style.transition = '';
 
         // Re-trigger CSS animation for fade-in by toggling the class
-        // The 'cover-image' class in CSS defines the fade-in animation
         slideImageElement.classList.remove('cover-image');
         void slideImageElement.offsetWidth; // Force reflow
         slideImageElement.classList.add('cover-image');
-        // Opacity will be handled by the 'cover-image' class animation
-      };
-
-      slideImageElement.addEventListener('transitionend', handleFadeOutComplete, { once: true });
+        // The 'cover-image' class CSS handles opacity:0 start and animation to opacity:1
+      }, 500); // Wait for fade-out (0.5s)
     }
   }
 
