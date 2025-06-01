@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
       slideImageElement.classList.add('cover-image');
     } else {
       // Fade out current image
-      slideImageElement.style.transition = 'opacity 0.5s ease-in-out';
+      slideImageElement.style.transition = 'opacity 0.7s ease-in-out';
       slideImageElement.style.opacity = '0';
 
       setTimeout(() => {
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         void slideImageElement.offsetWidth; // Force reflow
         slideImageElement.classList.add('cover-image');
         // The 'cover-image' class CSS handles opacity:0 start and animation to opacity:1
-      }, 500); // Wait for fade-out (0.5s)
+      }, 700); // Wait for fade-out (0.7s)
     }
   }
 
