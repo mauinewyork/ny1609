@@ -5,33 +5,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Audio setup
   let audioStarted = false;
-  function tryStartAudio() {
+
+  function removeInteractionListeners() {
+    window.removeEventListener('click', handleFirstInteraction);
+    window.removeEventListener('scroll', handleFirstInteraction);
+    window.removeEventListener('keydown', handleFirstInteraction);
+  }
+
+  function handleFirstInteraction(event) {
+    if (event && event.type === 'keydown') {
+      // Only proceed for arrow keys if it's a keydown event
+      if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+        return;
+      }
+    }
+
     if (backgroundAudio && !audioStarted) {
-      backgroundAudio.volume = 0.75; // Set volume to 75%
       backgroundAudio.play().then(() => {
         audioStarted = true;
         // console.log("Audio started successfully after user interaction.");
-        // Remove these specific listeners once audio has started or attempted to start
-        window.removeEventListener('click', tryStartAudio);
-        window.removeEventListener('scroll', tryStartAudio);
+        removeInteractionListeners();
       }).catch(error => {
-        console.warn("Audio play attempt after user interaction failed or was prevented.", error);
-        // Still remove listeners to prevent repeated attempts on every click/scroll if it fails
-        window.removeEventListener('click', tryStartAudio);
-        window.removeEventListener('scroll', tryStartAudio);
+        console.warn("Audio play attempt after user interaction failed.", error);
+        // Still remove listeners to prevent repeated attempts if this specific interaction fails.
+        // User might need to try a different interaction or browser might be very restrictive.
+        removeInteractionListeners();
       });
     } else if (audioStarted) {
-        // If audio already started, ensure listeners are removed if somehow still present
-        window.removeEventListener('click', tryStartAudio);
-        window.removeEventListener('scroll', tryStartAudio);
+      // If audio somehow started by other means before this, ensure listeners are cleaned up.
+      removeInteractionListeners();
     }
   }
 
   if (backgroundAudio) {
-    backgroundAudio.volume = 0.75; // Set volume initially
-    // Add event listeners for the first interaction
-    window.addEventListener('click', tryStartAudio, { once: false }); // Use {once: false} and remove manually for more control
-    window.addEventListener('scroll', tryStartAudio, { once: false });
+    backgroundAudio.volume = 0.75; // Set volume
+
+    // Attempt to play immediately
+    backgroundAudio.play().then(() => {
+      audioStarted = true;
+      // console.log("Audio autoplayed successfully.");
+    }).catch(error => {
+      console.warn("Audio autoplay was prevented. Waiting for user interaction.", error);
+      // If autoplay fails, set up listeners for the first user interaction
+      window.addEventListener('click', handleFirstInteraction);
+      window.addEventListener('scroll', handleFirstInteraction);
+      window.addEventListener('keydown', handleFirstInteraction);
+    });
   } else {
     console.warn("Background audio element not found.");
   }
