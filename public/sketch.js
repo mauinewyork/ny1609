@@ -1,6 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
   const desktopSlideImageElement = document.getElementById('slide-image');
   const mobileSlidesContainer = document.getElementById('mobile-slides-container');
+  const backgroundAudio = document.getElementById('background-audio');
+
+  // Audio setup
+  if (backgroundAudio) {
+    backgroundAudio.volume = 0.75; // Set volume to 75%
+    // Attempt to play. Modern browsers might block autoplay until user interaction.
+    backgroundAudio.play().catch(error => {
+      console.warn("Audio autoplay was prevented by the browser. User interaction might be needed to start audio.", error);
+      // Optionally, you could add a button or event listener here to start audio on user interaction.
+    });
+  } else {
+    console.warn("Background audio element not found.");
+  }
 
   const slideImagePaths = [
     "slides/1- cover.png",
