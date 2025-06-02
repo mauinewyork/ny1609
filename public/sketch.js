@@ -1,3 +1,8 @@
+import { inject } from "@vercel/analytics";
+
+// Call inject() to initialize Vercel Analytics
+inject();
+
 document.addEventListener('DOMContentLoaded', () => {
   const desktopSlideImageElement = document.getElementById('slide-image');
   const mobileSlidesContainer = document.getElementById('mobile-slides-container');
