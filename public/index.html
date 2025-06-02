@@ -21,9 +21,15 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            object-fit: cover;
+            object-fit: cover; /* Default for desktop */
             opacity: 0;
             animation: fadeIn 1s ease-in-out forwards;
+        }
+
+        @media (max-width: 768px) {
+            .cover-image {
+                object-fit: contain; /* Fit image within viewport, maintain aspect ratio on mobile */
+            }
         }
         
         @keyframes fadeIn {
