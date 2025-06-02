@@ -10,26 +10,58 @@
             padding: 0;
             background-color: #000000;
             font-family: 'Georgia', serif;
-            overflow: hidden;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            /* overflow-y will be controlled by media queries */
             height: 100vh;
             width: 100vw;
         }
         
-        .cover-image {
+        .cover-image { /* Styles for the desktop slideshow image */
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            object-fit: cover; /* Default for desktop */
+            object-fit: cover;
             opacity: 0;
             animation: fadeIn 1s ease-in-out forwards;
+            display: block; /* Default for desktop */
         }
 
-        @media (max-width: 768px) {
-            .cover-image {
-                object-fit: contain; /* Fit image within viewport, maintain aspect ratio on mobile */
+        #mobile-slides-container {
+            display: none; /* Hidden by default */
+            width: 100%;
+            padding-top: 20px; /* Some space at the top */
+            padding-bottom: 20px; /* Some space at the bottom */
+        }
+
+        .mobile-slide-image {
+            width: 100%;
+            height: auto; /* Maintain aspect ratio */
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out forwards;
+            margin-bottom: 15px; /* Space between stacked images */
+            display: block; /* Ensure it takes full width and respects margin */
+        }
+
+        @media (max-width: 768px) { /* Mobile styles */
+            body {
+                overflow-y: auto; /* Allow vertical scrolling */
             }
+            .cover-image { /* Hide desktop slideshow image */
+                display: none;
+            }
+            #mobile-slides-container {
+                display: block; /* Show mobile container */
+            }
+        }
+
+        @media (min-width: 769px) { /* Desktop styles */
+            body {
+                overflow-y: hidden; /* Prevent scrolling for desktop slideshow */
+            }
+             /* .cover-image is already display: block by default */
+            /* #mobile-slides-container is already display: none by default */
         }
         
         @keyframes fadeIn {
@@ -114,7 +146,10 @@
     </style>
 </head>
 <body>
-    <img id="slide-image" src="" alt="Movie Pitch Slide" class="cover-image">
+    <img id="slide-image" src="" alt="Movie Pitch Slide Desktop" class="cover-image">
+    <div id="mobile-slides-container">
+        <!-- Mobile slides will be populated here by JavaScript -->
+    </div>
 
     <script src="sketch.js"></script>
 </body>
