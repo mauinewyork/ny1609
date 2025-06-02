@@ -83,13 +83,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     mobileSlidesContainer.innerHTML = ''; // Clear any previous content
 
-    slideImagePaths.forEach(path => {
+    function loadMobileSlideAtIndex(index) {
+      if (index >= actualNumSlides) {
+        // All slides loaded
+        return;
+      }
+
       const img = document.createElement('img');
-      img.src = path;
-      img.alt = "Movie Pitch Slide"; // Consider more descriptive alt text if possible
-      img.classList.add('mobile-slide-image');
+      img.alt = "Movie Pitch Slide " + (index + 1);
+      img.classList.add('mobile-slide-image'); // This class has the fadeIn animation
+
+      img.onload = () => {
+        // Image has loaded, CSS animation will handle fade-in.
+        // Now load the next slide.
+        loadMobileSlideAtIndex(index + 1);
+      };
+      
+      img.onerror = () => {
+        console.error("Error loading mobile slide image:", slideImagePaths[index]);
+        // Still try to load the next slide even if one fails, to not break the chain.
+        loadMobileSlideAtIndex(index + 1);
+      };
+
+      img.src = slideImagePaths[index]; // Setting src after onload is attached
       mobileSlidesContainer.appendChild(img);
-    });
+    }
+
+    if (actualNumSlides > 0) {
+      loadMobileSlideAtIndex(0); // Start loading the first slide
+    }
   }
 
   function preloadNextDesktopSlide(currentIndex) {
