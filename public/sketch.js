@@ -4,13 +4,34 @@ document.addEventListener('DOMContentLoaded', () => {
   const backgroundAudio = document.getElementById('background-audio');
 
   // Audio setup
+  let audioStarted = false;
+  function tryStartAudio() {
+    if (backgroundAudio && !audioStarted) {
+      backgroundAudio.volume = 0.75; // Set volume to 75%
+      backgroundAudio.play().then(() => {
+        audioStarted = true;
+        // console.log("Audio started successfully after user interaction.");
+        // Remove these specific listeners once audio has started or attempted to start
+        window.removeEventListener('click', tryStartAudio);
+        window.removeEventListener('scroll', tryStartAudio);
+      }).catch(error => {
+        console.warn("Audio play attempt after user interaction failed or was prevented.", error);
+        // Still remove listeners to prevent repeated attempts on every click/scroll if it fails
+        window.removeEventListener('click', tryStartAudio);
+        window.removeEventListener('scroll', tryStartAudio);
+      });
+    } else if (audioStarted) {
+        // If audio already started, ensure listeners are removed if somehow still present
+        window.removeEventListener('click', tryStartAudio);
+        window.removeEventListener('scroll', tryStartAudio);
+    }
+  }
+
   if (backgroundAudio) {
-    backgroundAudio.volume = 0.75; // Set volume to 75%
-    // Attempt to play. Modern browsers might block autoplay until user interaction.
-    backgroundAudio.play().catch(error => {
-      console.warn("Audio autoplay was prevented by the browser. User interaction might be needed to start audio.", error);
-      // Optionally, you could add a button or event listener here to start audio on user interaction.
-    });
+    backgroundAudio.volume = 0.75; // Set volume initially
+    // Add event listeners for the first interaction
+    window.addEventListener('click', tryStartAudio, { once: false }); // Use {once: false} and remove manually for more control
+    window.addEventListener('scroll', tryStartAudio, { once: false });
   } else {
     console.warn("Background audio element not found.");
   }
