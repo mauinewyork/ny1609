@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const slideImagePaths = [
-    "slides/1- cover.png",
+    "slides/1 - COVER.png",
     "slides/2 - THE ANCIENT ONES.png",
     "slides/3 - LOGLINE.png",
     "slides/4- THE SALT MEN.png",
@@ -76,20 +76,23 @@ document.addEventListener('DOMContentLoaded', () => {
     "slides/13 - CHARACTERS - HARD STICK@1x.png",
     "slides/14 - CHARACTERS - JOHN COLMAN@1x.png",
     "slides/15 - CHARACTERS - WILLOW@1x.png",
-    "slides/16 - CHARACTERS - DEKA@1x.png",
-    "slides/17 - CHARACTERS - KLOCK@1x.png",
-    "slides/18 - CHARACTERS - THUNDERCLOUD@1x.png",
-    "slides/19 - CHARACTERS - OWL@1x.png",
-    "slides/20 - SUPPORTING CHARACTERS@1x.png",
-    "slides/21 - SEASONS OVERVIEW@1x.png",
-    "slides/22 - SERIES OVERVIEW.png",
-    "slides/23 - SEASON ONE EPISODIC OVERVIEW.png",
-    "slides/24 - LOOK AND FEEL 1.png",
-    "slides/25 - LOOK AND FEEL 2.png",
-    "slides/26 - TECHNORELIGIOWEAPONS.png",
-    "slides/27 - LENAPE CIVILIZATION.png",
-    "slides/28 - CASTELLO PLAN.png",
-    "slides/28 - ECOSCIENCE.png"
+    "slides/17 - LITTLE FLOWER@1x.png",
+    "slides/18 - IBN@1x.png",
+    "slides/19 - JOHN HUDSON@1x.png",
+    "slides/21 - CHARACTERS - DEKA@1x.png",
+    "slides/22 - CHARACTERS - KLOCK@1x.png",
+    "slides/23 - CHARACTERS - THUNDERCLOUD@1x.png",
+    "slides/24 - CHARACTERS - OWL@1x.png",
+    "slides/25 - SUPPORTING CHARACTERS@1x.png",
+    "slides/26 - SEASONS OVERVIEW@1x.png",
+    "slides/27 - SERIES OVERVIEW.png",
+    "slides/28 - SEASON ONE EPISODIC OVERVIEW.png",
+    "slides/29 - LOOK AND FEEL 1.png",
+    "slides/30 - LOOK AND FEEL 2.png",
+    "slides/31 - TECHNORELIGIOWEAPONS.png",
+    "slides/32 - LENAPE CIVILIZATION.png",
+    "slides/33 - CASTELLO PLAN.png",
+    "slides/34 - ECOSCIENCE.png"
   ];
 
   const actualNumSlides = slideImagePaths.length;
