@@ -9,30 +9,39 @@ document.addEventListener('DOMContentLoaded', () => {
   let playButtonTimer = null;
 
   function attemptAudioPlayback() {
-    if (backgroundAudio && !audioStarted) {
+    // If audio is already considered started when this function is called (e.g. by button click),
+    // ensure the button is hidden and stop further processing in this call.
+    if (audioStarted) {
+      if (playAudioButton) {
+        playAudioButton.style.display = 'none';
+      }
+      if (playButtonTimer) {
+        clearTimeout(playButtonTimer); // Clear any pending timer to show the button
+      }
+      return; // Audio is already playing or has been successfully initiated.
+    }
+
+    if (backgroundAudio) { // No need to check !audioStarted here due to the check above
       backgroundAudio.play().then(() => {
         audioStarted = true;
         // console.log("Audio started successfully.");
         if (playAudioButton) {
-          playAudioButton.style.display = 'none'; // Hide button if it was shown
+          playAudioButton.style.display = 'none'; // Hide button once audio starts
         }
         if (playButtonTimer) {
-          clearTimeout(playButtonTimer); // Clear timer if audio starts before button appears
+          clearTimeout(playButtonTimer); // Clear timer if audio starts
         }
       }).catch(error => {
-        // This catch block will be entered if autoplay is prevented OR if play() is called later and fails.
-        // We only want to show the button logic if it's an autoplay failure on mobile.
         console.warn("Audio play attempt failed or was prevented:", error);
+        // Only show button via timer if it's an initial autoplay failure on mobile
+        // and audio hasn't started by other means.
         if (!audioStarted && isMobileView() && playAudioButton && playAudioButton.style.display !== 'block') {
-          // If autoplay failed, it's mobile, and button isn't already shown
-          // console.log("Autoplay failed on mobile, scheduling button display.");
-          if (playButtonTimer) clearTimeout(playButtonTimer); // Clear any existing timer
+          if (playButtonTimer) clearTimeout(playButtonTimer);
           playButtonTimer = setTimeout(() => {
-            if (!audioStarted && playAudioButton) { // Check again if audio started in the meantime
-              // console.log("Displaying play audio button after 5s delay.");
+            if (!audioStarted && playAudioButton) {
               playAudioButton.style.display = 'block';
             }
-          }, 5000); // 5-second delay
+          }, 5000);
         }
       });
     }
