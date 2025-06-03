@@ -64,6 +64,26 @@
             /* #mobile-slides-container is already display: none by default */
         }
         
+        #play-audio-button {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: rgba(74, 124, 89, 0.9);
+            color: #f4e4bc;
+            border: 2px solid rgba(244, 228, 188, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 1000; /* Ensure it's on top */
+            display: none; /* Hidden by default */
+        }
+
+        #play-audio-button:hover {
+            background-color: rgba(90, 140, 105, 0.9);
+        }
+
         @keyframes fadeIn {
             0% {
                 opacity: 0;
@@ -155,6 +175,7 @@
         <source src="/background_music.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
+    <button id="play-audio-button">Tap to Play Music</button>
 
     <script src="sketch.js"></script>
 </body>
