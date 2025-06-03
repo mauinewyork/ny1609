@@ -1,8 +1,3 @@
-import { inject } from "@vercel/analytics";
-
-// Call inject() to initialize Vercel Analytics
-inject();
-
 document.addEventListener('DOMContentLoaded', () => {
   const desktopSlideImageElement = document.getElementById('slide-image');
   const mobileSlidesContainer = document.getElementById('mobile-slides-container');
@@ -61,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const slideImagePaths = [
-    "slides/1%20-%20COVER.png",
+    "slides/1 - COVER.png",
     "slides/2 - THE ANCIENT ONES.png",
     "slides/3 - LOGLINE.png",
     "slides/4- THE SALT MEN.png",
