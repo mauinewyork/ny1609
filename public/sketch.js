@@ -6,65 +6,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Audio setup
   let audioStarted = false;
+  let playButtonTimer = null;
 
-  function startAudioPlayback() {
+  function attemptAudioPlayback() {
     if (backgroundAudio && !audioStarted) {
       backgroundAudio.play().then(() => {
         audioStarted = true;
         // console.log("Audio started successfully.");
         if (playAudioButton) {
-          playAudioButton.style.display = 'none'; // Hide button once audio starts
+          playAudioButton.style.display = 'none'; // Hide button if it was shown
         }
-        // Clean up general interaction listeners if they were for this purpose
-        window.removeEventListener('click', initialInteractionListener);
-        window.removeEventListener('scroll', initialInteractionListener);
-        window.removeEventListener('keydown', initialInteractionListener);
+        if (playButtonTimer) {
+          clearTimeout(playButtonTimer); // Clear timer if audio starts before button appears
+        }
       }).catch(error => {
-        console.warn("Audio play attempt failed.", error);
-        if (playAudioButton) {
-          playAudioButton.style.display = 'block'; // Ensure button is visible if play fails
+        // This catch block will be entered if autoplay is prevented OR if play() is called later and fails.
+        // We only want to show the button logic if it's an autoplay failure on mobile.
+        console.warn("Audio play attempt failed or was prevented:", error);
+        if (!audioStarted && isMobileView() && playAudioButton && playAudioButton.style.display !== 'block') {
+          // If autoplay failed, it's mobile, and button isn't already shown
+          // console.log("Autoplay failed on mobile, scheduling button display.");
+          if (playButtonTimer) clearTimeout(playButtonTimer); // Clear any existing timer
+          playButtonTimer = setTimeout(() => {
+            if (!audioStarted && playAudioButton) { // Check again if audio started in the meantime
+              // console.log("Displaying play audio button after 5s delay.");
+              playAudioButton.style.display = 'block';
+            }
+          }, 5000); // 5-second delay
         }
       });
     }
   }
-  
-  // This listener is for any first interaction if the button isn't used or as a fallback
-  function initialInteractionListener(event) {
-    if (event && event.type === 'keydown') {
-      if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
-        return;
-      }
-    }
-    // console.log('Initial interaction detected:', event.type);
-    startAudioPlayback();
-  }
-
 
   if (backgroundAudio) {
     backgroundAudio.volume = 0.75; // Set volume
 
     // Attempt to play immediately
-    backgroundAudio.play().then(() => {
-      audioStarted = true;
-      // console.log("Audio autoplayed successfully.");
-      if (playAudioButton) {
-        playAudioButton.style.display = 'none';
-      }
-    }).catch(error => {
-      console.warn("Audio autoplay was prevented.", error);
-      if (playAudioButton) {
-        playAudioButton.style.display = 'block';
-        playAudioButton.addEventListener('click', () => {
-          // console.log('Play audio button clicked');
-          startAudioPlayback();
-        });
-      }
-      // Fallback listeners if button somehow fails or for other interactions
-      // These are less critical if the button is the primary mechanism on failure
-      window.addEventListener('click', initialInteractionListener, { once: true });
-      window.addEventListener('scroll', initialInteractionListener, { once: true });
-      window.addEventListener('keydown', initialInteractionListener); // keydown needs manual removal or more complex logic for 'once' like behavior for specific keys
-    });
+    attemptAudioPlayback(); // This will handle the initial play and subsequent logic
+
+    if (playAudioButton) {
+      playAudioButton.addEventListener('click', () => {
+        // console.log('Play audio button clicked');
+        attemptAudioPlayback(); // Try to play when button is clicked
+      });
+    }
   } else {
     console.warn("Background audio element not found.");
   }
