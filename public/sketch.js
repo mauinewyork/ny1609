@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Audio setup
   let audioStarted = false;
   let playButtonTimer = null;
+  let desktopInteractionListenerAdded = false; // Flag for desktop one-time listener
 
   function attemptAudioPlayback() {
     // If audio is already considered started when this function is called (e.g. by button click),
@@ -33,15 +34,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }).catch(error => {
         console.warn("Audio play attempt failed or was prevented:", error);
-        // Only show button via timer if it's an initial autoplay failure on mobile
-        // and audio hasn't started by other means.
-        if (!audioStarted && isMobileView() && playAudioButton && playAudioButton.style.display !== 'block') {
-          if (playButtonTimer) clearTimeout(playButtonTimer);
-          playButtonTimer = setTimeout(() => {
-            if (!audioStarted && playAudioButton) {
-              playAudioButton.style.display = 'block';
+        
+        if (!audioStarted) { // Only set up fallbacks if audio hasn't started yet
+          if (isMobileView()) {
+            // Mobile: Show button after delay if not already visible
+            if (playAudioButton && playAudioButton.style.display !== 'block') {
+              if (playButtonTimer) clearTimeout(playButtonTimer);
+              playButtonTimer = setTimeout(() => {
+                if (!audioStarted && playAudioButton) { // Re-check audioStarted
+                  playAudioButton.style.display = 'block';
+                }
+              }, 5000);
             }
-          }, 5000);
+          } else if (!desktopInteractionListenerAdded) { // Desktop: Add a one-time click listener
+            // console.log("Autoplay failed on desktop. Adding one-time click listener to window.");
+            const desktopPlayOnClick = () => {
+              if (!audioStarted) { // Check again before trying to play
+                attemptAudioPlayback();
+              }
+              window.removeEventListener('click', desktopPlayOnClick); // Remove after first click
+            };
+            window.addEventListener('click', desktopPlayOnClick);
+            desktopInteractionListenerAdded = true; // Ensure this listener is only added once
+          }
         }
       });
     }
