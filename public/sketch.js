@@ -32,30 +32,52 @@ document.addEventListener('DOMContentLoaded', () => {
         if (playButtonTimer) {
           clearTimeout(playButtonTimer); // Clear timer if audio starts
         }
+        // If audio started successfully, and desktop listeners were added, remove them.
+        if (desktopInteractionListenerAdded && !isMobileView()) {
+            // This is a bit indirect. The listeners remove themselves.
+            // We can ensure they are gone if audioStarted becomes true.
+            // The listeners themselves call cleanupDesktopListeners.
+            // No explicit call needed here if listeners are robust.
+        }
       }).catch(error => {
+        // This .catch() is for the backgroundAudio.play() call within attemptAudioPlayback,
+        // which could be the initial autoplay OR a subsequent call (e.g. from button or desktop interaction).
         console.warn("Audio play attempt failed or was prevented:", error);
         
-        if (!audioStarted) { // Only set up fallbacks if audio hasn't started yet
+        if (!audioStarted) {
           if (isMobileView()) {
-            // Mobile: Show button after delay if not already visible
             if (playAudioButton && playAudioButton.style.display !== 'block') {
               if (playButtonTimer) clearTimeout(playButtonTimer);
               playButtonTimer = setTimeout(() => {
-                if (!audioStarted && playAudioButton) { // Re-check audioStarted
+                if (!audioStarted && playAudioButton) {
                   playAudioButton.style.display = 'block';
                 }
               }, 5000);
             }
-          } else if (!desktopInteractionListenerAdded) { // Desktop: Add a one-time click listener
-            // console.log("Autoplay failed on desktop. Adding one-time click listener to window.");
+          } else if (!desktopInteractionListenerAdded) { // Desktop: Add one-time click and keydown listeners
+            // console.log("Autoplay failed on desktop. Adding one-time interaction listeners.");
+            
             const desktopPlayOnClick = () => {
-              if (!audioStarted) { // Check again before trying to play
-                attemptAudioPlayback();
-              }
-              window.removeEventListener('click', desktopPlayOnClick); // Remove after first click
+              if (!audioStarted) { attemptAudioPlayback(); }
+              cleanupDesktopListeners();
             };
+            
+            const desktopPlayOnKeydown = (event) => {
+              if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+                if (!audioStarted) { attemptAudioPlayback(); }
+                cleanupDesktopListeners();
+              }
+            };
+
+            const cleanupDesktopListeners = () => {
+              window.removeEventListener('click', desktopPlayOnClick);
+              window.removeEventListener('keydown', desktopPlayOnKeydown);
+              // console.log("Desktop interaction listeners cleaned up.");
+            };
+
             window.addEventListener('click', desktopPlayOnClick);
-            desktopInteractionListenerAdded = true; // Ensure this listener is only added once
+            window.addEventListener('keydown', desktopPlayOnKeydown);
+            desktopInteractionListenerAdded = true;
           }
         }
       });
