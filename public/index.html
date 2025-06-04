@@ -68,31 +68,6 @@
             /* #mobile-slides-container is already display: none by default */
         }
         
-        #play-audio-button {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 25px;
-            font-family: 'Roboto', sans-serif;
-            font-size: 1em;
-            font-weight: bold;
-            background-color: #444444; /* Dark gray */
-            color: #dddddd; /* Light gray */
-            border: 2px solid #666666; /* Medium gray border */
-            /* border-radius: 8px; */ /* Removed */
-            cursor: pointer;
-            z-index: 1000;
-            display: none; /* Hidden by default, JS will show it */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
-
-        #play-audio-button:hover {
-            background-color: #555555; /* Slightly lighter gray on hover */
-            border-color: #777777;
-        }
-
         @keyframes fadeIn {
             0% {
                 opacity: 0;
@@ -180,11 +155,6 @@
         <!-- Mobile slides will be populated here by JavaScript -->
     </div>
 
-    <audio id="background-audio" loop>
-        <source src="/background_music.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-    <button id="play-audio-button">Tap to Play Music</button>
 
     <script src="sketch.js"></script>
 </body>
