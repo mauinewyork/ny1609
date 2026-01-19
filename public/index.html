@@ -172,6 +172,62 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.6);
             border-color: rgba(244, 228, 188, 0.6);
         }
+
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        #password-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #password-input {
+            padding: 10px;
+            font-size: 1.2em;
+            border: 2px solid #666666;
+            background-color: #333333;
+            color: #dddddd;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        #password-input:focus {
+            border-color: #777777;
+        }
+
+        #password-submit {
+            padding: 10px 15px;
+            font-size: 1.2em;
+            background-color: #444444;
+            color: #dddddd;
+            border: 2px solid #666666;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #password-submit:hover {
+            background-color: #555555;
+        }
+
+        .password-error {
+            margin-top: 20px;
+            color: #ff6666;
+            font-size: 1.2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+        }
     </style>
 </head>
 <body>
@@ -185,6 +241,14 @@
         Your browser does not support the audio element.
     </audio>
     <button id="play-audio-button">Tap to Play Music</button>
+
+    <div id="password-overlay" class="password-overlay">
+        <form id="password-form">
+            <input type="password" id="password-input" placeholder="Enter Password" autocomplete="off">
+            <button type="submit" id="password-submit">→</button>
+        </form>
+        <div id="password-error" class="password-error"></div>
+    </div>
 
     <script src="sketch.js"></script>
 </body>

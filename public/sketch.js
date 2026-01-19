@@ -3,6 +3,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const mobileSlidesContainer = document.getElementById('mobile-slides-container');
   const backgroundAudio = document.getElementById('background-audio');
   const playAudioButton = document.getElementById('play-audio-button');
+  const passwordOverlay = document.getElementById('password-overlay');
+  const passwordForm = document.getElementById('password-form');
+  const passwordInput = document.getElementById('password-input');
+  const passwordError = document.getElementById('password-error');
 
   // Audio setup
   let audioStarted = false;
@@ -141,6 +145,40 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentDesktopSlide = 0;
   let preloadedDesktopImage = null;
 
+  function isAuthenticated() {
+    return sessionStorage.getItem('authenticated') === 'true';
+  }
+
+  function showSlides() {
+    if (passwordOverlay) passwordOverlay.style.display = 'none';
+    if (desktopSlideImageElement) desktopSlideImageElement.style.display = 'block';
+    if (mobileSlidesContainer) mobileSlidesContainer.style.display = isMobileView() ? 'block' : 'none';
+    initializeView();
+  }
+
+  function showPasswordOverlay() {
+    if (passwordOverlay) passwordOverlay.style.display = 'flex';
+    if (desktopSlideImageElement) desktopSlideImageElement.style.display = 'none';
+    if (mobileSlidesContainer) mobileSlidesContainer.style.display = 'none';
+  }
+
+  function validatePassword(password) {
+    return password.toLowerCase() === 'henry';
+  }
+
+  function handlePasswordSubmit(event) {
+    event.preventDefault();
+    const password = passwordInput.value.trim();
+    if (validatePassword(password)) {
+      sessionStorage.setItem('authenticated', 'true');
+      passwordError.textContent = '';
+      showSlides();
+    } else {
+      passwordError.textContent = 'INCORRECT PASSWORD';
+    }
+    passwordInput.value = '';
+  }
+
   function isMobileView() {
     return window.innerWidth <= 768;
   }
@@ -270,8 +308,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Add password form event listener
+  if (passwordForm) {
+    passwordForm.addEventListener('submit', handlePasswordSubmit);
+  }
+
   // Initial setup
-  initializeView();
+  if (isAuthenticated()) {
+    showSlides();
+  } else {
+    showPasswordOverlay();
+  }
 
   // Optional: Re-initialize on window resize if you want it to be dynamic
   // without a page reload, though this can add complexity.
