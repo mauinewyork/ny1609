@@ -22,8 +22,14 @@ app.get('/3d', (req, res) => {
 
 // Function to log to Slack
 async function logToSlack(ip) {
-    const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+    let webhookUrl = process.env.SLACK_WEBHOOK_URL;
+    if (webhookUrl) {
+        webhookUrl = webhookUrl.trim().replace(/^["']|["']$/g, ''); // Remove quotes if present
+    }
     console.log('Webhook URL present:', !!webhookUrl);
+    if (webhookUrl) {
+        console.log('Webhook URL starts with:', webhookUrl.substring(0, 30));
+    }
     if (!webhookUrl) {
         console.warn('SLACK_WEBHOOK_URL not set');
         return;
