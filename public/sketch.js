@@ -166,13 +166,19 @@ document.addEventListener('DOMContentLoaded', () => {
     return password.toLowerCase() === 'henry';
   }
 
-  function handlePasswordSubmit(event) {
+  async function handlePasswordSubmit(event) {
     event.preventDefault();
     const password = passwordInput.value.trim();
     if (validatePassword(password)) {
       sessionStorage.setItem('authenticated', 'true');
       passwordError.textContent = '';
       showSlides();
+      // Log to server
+      try {
+        await fetch('/log-access', { method: 'POST' });
+      } catch (error) {
+        console.error('Failed to log access:', error);
+      }
     } else {
       passwordError.textContent = 'INCORRECT PASSWORD';
     }
