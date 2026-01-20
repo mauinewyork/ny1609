@@ -37,7 +37,7 @@ async function logToSlack(ip) {
 
     console.log('Attempting to log to Slack for IP:', ip);
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
     try {
         const response = await fetch(webhookUrl, {
@@ -70,7 +70,8 @@ async function logToSlack(ip) {
 app.post('/log-access', (req, res) => {
     const ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.connection.remoteAddress;
     console.log(`Successful password entry from IP: ${ip}`);
-    logToSlack(ip);
+    // Fire and forget - don't wait for Slack response
+    logToSlack(ip).catch(err => console.error('Slack logging error:', err));
     res.status(200).send('Logged');
 });
 
