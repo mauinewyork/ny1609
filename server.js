@@ -24,18 +24,20 @@ app.get('/3d', (req, res) => {
 // Function to log to Slack
 async function logToSlack(ip) {
     const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+    console.log('Webhook URL present:', !!webhookUrl);
     if (!webhookUrl) {
         console.warn('SLACK_WEBHOOK_URL not set');
         return;
     }
 
+    console.log('Attempting to log to Slack for IP:', ip);
     try {
-        await axios.post(webhookUrl, {
+        const response = await axios.post(webhookUrl, {
             text: `Successful password entry from IP: ${ip} at ${new Date().toISOString()}`
         });
-        console.log(`Logged to Slack: ${ip}`);
+        console.log(`Logged to Slack successfully: ${ip}, status: ${response.status}`);
     } catch (error) {
-        console.error('Failed to log to Slack:', error.message);
+        console.error('Failed to log to Slack:', error.message, error.response?.data);
     }
 }
 
