@@ -30,6 +30,9 @@ async function logToSlack(ip) {
     }
 
     console.log('Attempting to log to Slack for IP:', ip);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
     try {
         const response = await fetch(webhookUrl, {
             method: 'POST',
@@ -39,14 +42,21 @@ async function logToSlack(ip) {
             body: JSON.stringify({
                 text: `Successful password entry from IP: ${ip} at ${new Date().toISOString()}`
             }),
+            signal: controller.signal,
         });
+        clearTimeout(timeoutId);
         if (response.ok) {
             console.log(`Logged to Slack successfully: ${ip}, status: ${response.status}`);
         } else {
             console.error(`Slack webhook failed: ${response.status} ${response.statusText}`);
         }
     } catch (error) {
-        console.error('Failed to log to Slack:', error.message);
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+            console.error('Slack request timed out');
+        } else {
+            console.error('Failed to log to Slack:', error.message);
+        }
     }
 }
 
