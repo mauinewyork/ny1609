@@ -1,6 +1,5 @@
 const express = require('express');
 const path = require('path');
-const axios = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -32,12 +31,22 @@ async function logToSlack(ip) {
 
     console.log('Attempting to log to Slack for IP:', ip);
     try {
-        const response = await axios.post(webhookUrl, {
-            text: `Successful password entry from IP: ${ip} at ${new Date().toISOString()}`
+        const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                text: `Successful password entry from IP: ${ip} at ${new Date().toISOString()}`
+            }),
         });
-        console.log(`Logged to Slack successfully: ${ip}, status: ${response.status}`);
+        if (response.ok) {
+            console.log(`Logged to Slack successfully: ${ip}, status: ${response.status}`);
+        } else {
+            console.error(`Slack webhook failed: ${response.status} ${response.statusText}`);
+        }
     } catch (error) {
-        console.error('Failed to log to Slack:', error.message, error.response?.data);
+        console.error('Failed to log to Slack:', error.message);
     }
 }
 
